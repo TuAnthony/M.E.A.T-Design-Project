@@ -1,1 +1,0 @@
-This will be where all the m.e.a.t smoker code will be compiled at and will be used for our senior design project
