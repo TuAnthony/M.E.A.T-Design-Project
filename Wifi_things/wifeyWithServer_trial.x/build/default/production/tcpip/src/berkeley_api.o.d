@@ -1,0 +1,41 @@
+build/default/production/tcpip/src/berkeley_api.o:  \
+ tcpip/src/berkeley_api.c  \
+tcpip/src/../tcpip.h  \
+ tcpip/src/../../system_config.h  \
+tcpip/src/../../system.h  \
+ tcpip/src/../../tcpip_config.h  \
+tcpip/src/../src/common/stack_task.h  \
+ tcpip/src/../src/common/../tcpip_types.h  \
+ tcpip/src/../src/common/../../../system_config.h  \
+ tcpip/src/../src/common/../../../drv_wifi_config.h  \
+ tcpip/src/../src/common/helpers.h  \
+tcpip/src/../src/common/delay.h  \
+ tcpip/src/../src/common/tick.h  \
+tcpip/src/../mac.h  \
+ tcpip/src/../src/enc28j60.h  \
+tcpip/src/../src/tcpip_types.h  \
+ tcpip/src/../ip.h  \
+tcpip/src/../arp.h  \
+tcpip/src/../src/common/hashes.h  \
+ tcpip/src/../src/common/spi_eeprom.h  \
+tcpip/src/../src/common/spi_flash.h  \
+ tcpip/src/../src/common/spi_ram.h  \
+tcpip/src/../udp.h  \
+tcpip/src/../tcp.h  \
+ tcpip/src/../src/common/lcd_blocking.h  \
+tcpip/src/../src/common/uart.h  \
+ tcpip/src/../dhcp.h  \
+tcpip/src/../dns.h  \
+tcpip/src/../src/common/mpfs2.h  \
+ tcpip/src/../http2.h  \
+tcpip/src/../icmp.h  \
+tcpip/src/../announce.h  \
+ tcpip/src/../nbns.h  \
+tcpip/src/../smtp.h  \
+tcpip/src/../sntp.h  \
+ tcpip/src/../../driver/wifi/mrf24w/src/drv_wifi_mac.h  \
+ tcpip/src/../../driver/wifi/mrf24w/src/../drv_wifi_api.h  \
+ tcpip/src/../../driver/wifi/mrf24w/src/drv_wifi_mgmt_msg.h  \
+ tcpip/src/../../driver/wifi/mrf24w/src/drv_wifi_debug_strings.h  \
+ tcpip/src/../../driver/wifi/mrf24w/src/drv_wifi_priv_24g.h  \
+ tcpip/src/../../driver/wifi/mrf24w/src/drv_wifi_raw_24g.h 
