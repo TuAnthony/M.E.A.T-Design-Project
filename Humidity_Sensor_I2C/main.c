@@ -34,7 +34,6 @@ limitations under the License.
 // Section: File Scope Variables and Functions
 // *****************************************************************************
 // *****************************************************************************
-float hTemp,RH;
 
 extern void SYS_Initialize ( void ) ;
 //static void TimerEventHandler( void );
@@ -84,6 +83,8 @@ void I2Csendbyte(char data)
 {
     while (I2C1STATbits.TBF) ;//wait if buffer is full
     I2C1TRN = data; // pass data to transmission register
+    while (I2C1STATbits.TBF) ;//wait if buffer is full
+    if(I2C1STATbits.ACKSTAT) I2Csendbyte(data);
     us_delay(500); // delay to be safe
 }
 
@@ -95,15 +96,6 @@ char I2Cgetbyte( void)
     us_delay(10); // delay to be safe
     return(I2C1RCV);
 }
-
-/*void humidInit(void)
-{
-    I2CStart();     //  Send start command
-    I2Csendbyte(0xE0);  // Send address of Humidity Sensor
-    I2Csendbyte(0xB0);  // Send MSB of Sleep Command
-    I2Csendbyte(0x98);  // Send LSB of Sleep Command
-    I2CStop();
-}*/
 
 void humidWake(void)
 {
@@ -130,8 +122,10 @@ void humidMeasure(void)
     // Initiate Measurement
     I2CStart();         // Send start command
     I2Csendbyte(0xE0);  // Send address of Humidity Sensor w/ write bit
-    I2Csendbyte(0x58);  // MSB of Measurement Command
-    I2Csendbyte(0xE0);  // LSB of Measurement Command
+    //I2Csendbyte(0x58);  // MSB of Measurement Command
+    //I2Csendbyte(0xE0);  // LSB of Measurement Command
+    I2Csendbyte(0x5C);  // MSB of Measurement Command
+    I2Csendbyte(0x24);  // LSB of Measurement Command
     //I2CStop();        // Send stop command
 }
 
@@ -148,15 +142,16 @@ int main ( void )
     TRISA = 0xff00;
     PORTA = 0x0;
     uint16_t humid,temp;
+    float hTemp,RH,Temp_F;
     int id_Hi,id_Lo,id_Crc;
     char humidCRC, tempCRC;
     
     /* Call the System Initialize routine*/
-    us_delay(500);
-    SYS_Initialize ( );
-    I2Cinit(78);
-    //humidInit(); No need for init functions since its same as sleep
-    humidSleep();
+    us_delay(500);  // Wait for peripherals to startup
+    SYS_Initialize ( ); // Initialize system (think LDC)
+    I2Cinit(78); // Startup I2C module
+    us_delay(10);
+    humidSleep(); // Send humidity sensor from idle state to sleep
     
     // Check Device ID
     humidWake();        // Wakeup humidity sensor
@@ -172,7 +167,7 @@ int main ( void )
     I2CStop();
     us_delay(10);
     humidSleep();
-    PORTA = id_Lo; // Should be 0b'XX00'0111
+    PORTA = id_Lo; // From Datasheet should be 0b'XX00'0111
     
     
     
@@ -197,12 +192,12 @@ int main ( void )
         I2CStart();         // Send start command
         I2Csendbyte(0xE1);  // Send address of Humidity Sensor w/ read bit
         humid = I2Cgetbyte(); // Grab that High Byte
-        humid = (humid<<8) || I2Cgetbyte(); // Grab that Low Byte
-        //humid = (humid<<8) + I2Cgetbyte(); // Grab that Low Byte
+        //humid = (humid<<8) || I2Cgetbyte(); // Grab that Low Byte
+        humid = (humid<<8) + I2Cgetbyte(); // Grab that Low Byte
         humidCRC = I2Cgetbyte(); // Grab that CRC
         temp = I2Cgetbyte(); // Grab that High Byte
-        temp = (temp<<8) || I2Cgetbyte(); // Grab that Low Byte
-        //temp = (temp<<8) + I2Cgetbyte(); // Grab that Low Byte
+        //temp = (temp<<8) || I2Cgetbyte(); // Grab that Low Byte
+        temp = (temp<<8) + I2Cgetbyte(); // Grab that Low Byte
         tempCRC = I2Cgetbyte(); // Grab that CRC
         I2CStop();          // Send stop command
         us_delay(10);
@@ -211,22 +206,19 @@ int main ( void )
 
         hTemp = 175 * (float)temp / 65536.0f - 45.0f;
         RH = 100 * (float)humid / 65536.0f;
-        printf( "\f" ); // Clear screen
-        //RH = 100 * (float)humid / 65536.0f;
-        printf("Temp = %1.3f\r\nHumid = %1.3f\r\n", hTemp,RH);
-        //hTemp = ((float)temp/375.5)-45;
-        //RH = ((float)humid/655.35);
-        /*if(hTemp<125)
+        if(hTemp<125)
         {
             printf( "\f" ); // Clear screen
-            RH = 100 * (float)humid / 65536.0f;
-            printf("Temp = %1.3f\r\nHumid = %1.3f\r\n", hTemp,RH);
+            //RH = 100 * (float)humid / 65536.0f;
+            Temp_F = hTemp*1.8 + 32;
+            printf("DegF. = %1.3f\r\nHumid = %1.3f\r\n", Temp_F,RH);
+            //printf("DegC. = %1.3f\r\nHumid = %1.3f\r\n", hTemp,RH);
         }
         else
         {
             printf( "\f" ); // Clear screen
             printf("Temperature\r\nToo High\r\n");
-        }*/
+        }
         //Clear the screen
         //printf( "\f" );  
         //printf("CoLlIn WuZ hErE!\r\nCoLlIn WuZ hErE!\r\n");
